@@ -28,6 +28,15 @@ public class Population1 : MonoBehaviour
     Individual objInd;
     //Come objCome;
 
+    // Crossover algorithms
+    [SerializeField]
+    private bool fifthy_fifthy = true;
+    [SerializeField]
+    private bool random_midpoint = false;
+    [SerializeField]
+    private bool coin_flip = false;
+
+
     // Use this for initialization
     void Start()
     {   //generate the first population of the algorithm
@@ -98,7 +107,7 @@ public class Population1 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-         
+        resetBools();
     }
 
     public bool ActivaGen()
@@ -127,7 +136,7 @@ public class Population1 : MonoBehaviour
         else return false;
 
     }
-        public void selecBest()
+    public void selecBest()
     {
         if (evalAgent.Count > 0)
         {
@@ -190,16 +199,11 @@ public class Population1 : MonoBehaviour
 
             refInd = Gdestino[i].GetComponent<Individual>();  // del hijo
             refInd.reset();
-            int halfF = refInd.genSize / 2;
             if (refInd != null)
             {
-                for (int j = 0; j < halfF; j = j + 1)
-                {
-                    refInd.genes[j] = refInd_F1.genes[j];
-                    refInd.genes[j + halfF] = refInd_F2.genes[j + halfF];
-                }
-
-
+                if (fifthy_fifthy) refInd = fifthyFifthy(refInd, refInd_F1, refInd_F2);
+                else if (random_midpoint) refInd = randomMidpoint(refInd, refInd_F1, refInd_F2);
+                else if (coin_flip) refInd = coinFlip(refInd, refInd_F1, refInd_F2);
             }
         }
         // termino de asignar caracteristicas
@@ -231,6 +235,46 @@ public class Population1 : MonoBehaviour
 
         }
     }
+
+    public Individual fifthyFifthy(Individual refInd, Individual refInd_F1, Individual refInd_F2)
+    {
+        int halfF = refInd.genSize / 2;
+        for (int j = 0; j < halfF; j = j + 1)
+        {
+            refInd.genes[j] = refInd_F1.genes[j];
+            refInd.genes[j + halfF] = refInd_F2.genes[j + halfF];
+        }
+        return refInd;
+    }
+
+    public Individual randomMidpoint(Individual refInd, Individual refInd_F1, Individual refInd_F2)
+    {
+        int randomMidpoint = Random.Range(0, refInd.genSize);
+        for (int j = 0; j < randomMidpoint; j = j + 1)
+        {
+            refInd.genes[j] = refInd_F1.genes[j];
+            refInd.genes[randomMidpoint - j] = refInd_F2.genes[randomMidpoint - j];
+        }
+        return refInd;
+    }
+
+    public Individual coinFlip(Individual refInd, Individual refInd_F1, Individual refInd_F2)
+    {
+        int randInt = Random.Range(0, 2);
+        for (int j = 0; j < randInt; j = j + 1)
+        {
+            if (randInt == 0)
+            {
+                refInd.genes[j] = refInd_F1.genes[j];
+            } else
+            {
+                refInd.genes[j] = refInd_F2.genes[j];
+            }
+            
+        }
+        return refInd;
+    }
+
     //*********************************************************************
     public void mutation()
     {
@@ -259,6 +303,23 @@ public class Population1 : MonoBehaviour
 
     }
 
-
+    public void resetBools()
+    {
+        if (fifthy_fifthy)
+        {
+            random_midpoint = false;
+            coin_flip = false;
+        }
+        else if (random_midpoint)
+        {
+            fifthy_fifthy = false;
+            coin_flip = false;
+        }
+        else if (coin_flip)
+        { 
+            fifthy_fifthy = false;
+            random_midpoint = false;
+        }
+    }
 
 }

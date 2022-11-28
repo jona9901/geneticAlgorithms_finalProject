@@ -27,6 +27,7 @@ public class GAcicle : MonoBehaviour
             Debug.Log("termino generacion");
             pop1.selecBest();
             pop1.crossover();
+            //pop1.crossover_randomMidpoint();
             pop1.mutation();
             numGen++;
 
