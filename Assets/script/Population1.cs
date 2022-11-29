@@ -44,13 +44,10 @@ public class Population1 : MonoBehaviour
     [Range(0, 100)]
     public int mutationPercentage = 5;
 
-    public int mutated_gens = 10;
+    public int mutatedGens = 10;
 
-    public int Vx0 = 0;
-    public int Vx1 = 1;
-    public int Vy0 = 0;
-    public int Vy1 = 1;
-
+    public Vector2 Vx;
+    public Vector2 Vy;
 
     // Use this for initialization
     void Start()
@@ -332,7 +329,7 @@ public class Population1 : MonoBehaviour
 
         int muta, genmuta;
         GameObject obj;
-        for (int i = 0; i < mutated_gens; i++)
+        for (int i = 0; i < mutatedGens; i++)
         {
             muta = Random.Range(0, totalPop);
             obj = agents[muta];
@@ -340,7 +337,7 @@ public class Population1 : MonoBehaviour
             objInd = obj.GetComponent<Individual>();
             genmuta = Random.Range(0, objInd.genSize);
 
-            Vector3 genTmp = new Vector3(UnityEngine.Random.Range(-1.0f, 1.0f), 0, UnityEngine.Random.Range(-1.0f, 1.0f));
+            Vector3 genTmp = new Vector3(UnityEngine.Random.Range(Vx[0], Vx[1]), 0, UnityEngine.Random.Range(Vy[0], Vy[1]));
             genTmp.Normalize();
             genTmp *= mutationPercentage;
             objInd.genes[genmuta]=genTmp;
