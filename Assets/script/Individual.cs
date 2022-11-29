@@ -1,4 +1,6 @@
-using System.Collections;
+// AI for videogames - Maria Luisa Cruz Lopez - 2022
+// @author: Jonathan Castillo, Diego Iniguez, Sebastian Astiazaran
+
 using System.Collections.Generic;
 using System;
 using UnityEngine;
@@ -9,7 +11,7 @@ public class Individual : MonoBehaviour, IComparable<Individual>, IEquatable<Ind
 
     public GameObject destino;
     public GameObject origen;
-     Vector3 newposition;
+    Vector3 newposition;
     public int genSize=50;
 
     public int avance = 0;
@@ -23,7 +25,7 @@ public class Individual : MonoBehaviour, IComparable<Individual>, IEquatable<Ind
 
     MoveVelSimple mymove;
 
-    // Start is called before the first frame update
+    // Run on start
     void Start()
     {
         UnityEngine.Random.InitState(20);
@@ -31,6 +33,8 @@ public class Individual : MonoBehaviour, IComparable<Individual>, IEquatable<Ind
         mymove = transform.gameObject.GetComponent<MoveVelSimple>();
         mymove.OnSeek = true;
     }
+
+    // Initialize all genes
     public bool InitGenes()
     {
         for (int i = 0; i < genSize; i++)
@@ -42,37 +46,34 @@ public class Individual : MonoBehaviour, IComparable<Individual>, IEquatable<Ind
         }
         return true;
     }
+
+    // Initialice agent movement
     public void initmove()
     {
         mymove = transform.gameObject.GetComponent<MoveVelSimple>();
         mymove.OnSeek = true;
     }
+
     // Update is called once per frame
     void Update()
     {
-        //Debug.Log(message: "pos " + gameObject.transform.position + newposition) ;
-       // Debug.Log(message: "npos " + newposition);
         Vector3 difavance = gameObject.transform.position - newposition;
         difavance.y = 0.0f;
         if (avance < 1)
         {
-            //Debug.Log("primera vez");
             avance++;
             newposition += genes[avance];
             mymove.TargetSeek.transform.position = newposition;
             return;
         }
-        //Debug.Log("magdif " + difavance.magnitude);
         if (difavance.magnitude < 1.0f)
         {
-            // Debug.Log("esta cerca");
             if (avance < genSize-1)
             {
                 avance++;
                 newposition += genes[avance];
                 mymove.TargetSeek.transform.position = newposition;
             }
-            //Debug.Log("termino path");
             else
             {
                 mymove.OnSeek = false;
@@ -84,14 +85,11 @@ public class Individual : MonoBehaviour, IComparable<Individual>, IEquatable<Ind
                 avance = 0;
             }
         }
-        else
-        {
-           // Debug.Log("En path" + avance);
-        }
     }
+
+    // On trigger enter collision
     void OnTriggerEnter(Collider other)
     {
-        //Debug.Log("choco " + other.gameObject.tag);
         if (other.gameObject.tag == "meta")
         {
       
@@ -101,14 +99,12 @@ public class Individual : MonoBehaviour, IComparable<Individual>, IEquatable<Ind
         }
         if (other.gameObject.tag == "obst")
         {
-            //Destroy(other.gameObject);
-            //other.gameObject.SetActive(false);
             choco = true;
             mymove.OnSeek = false;
-
         }
     }
 
+    // Reset the agents
     public bool reset( )
     {
         avance = 0;
@@ -122,7 +118,7 @@ public class Individual : MonoBehaviour, IComparable<Individual>, IEquatable<Ind
         return true;
     }
 
-    //*************************
+    // Compare the agent with other agent
     public int CompareTo(Individual other)
     {
         if (other == null)
@@ -134,25 +130,28 @@ public class Individual : MonoBehaviour, IComparable<Individual>, IEquatable<Ind
         float dist= distDest-other.distDest;
         return (int)dist;
     }
-    //*************************
+
+    // Validate if the agent is equals to other agent
     public override bool Equals(System.Object obj)
     {
         Individual tmp = obj as Individual;
 
         return distDest == tmp.distDest;
     }
-    //*************************
+
+    // Get the hashcode of the agent
     public override int GetHashCode()
     {
         return numID;
     }
-    //*************************
+
+    // Validate if distDest equals to other agent distDest
     public bool Equals(Individual other)
     {
         return distDest == other.distDest;
     }
 
-    //*************************
+    // Draws gizmos
     void OnDrawGizmos()
     {
         //Debug.Log("dibuja Path");

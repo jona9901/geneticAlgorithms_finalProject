@@ -1,17 +1,24 @@
-using System.Collections;
+// AI for videogames - Maria Luisa Cruz Lopez - 2022
+// @author: Jonathan Castillo, Diego Iniguez, Sebastian Astiazaran
+
 using System.Collections.Generic;
 using UnityEngine;
 
+// Cross methods enumerator
+public enum CrossMethods
+{
+    fifthyFifthy,
+    randomMidpoint,
+    coinFlip
+}
+
 public class Population1 : MonoBehaviour
 {
-    int s = 100;
-
     int totalPop = 100;
     int totalArrive = 0;
     public GameObject myagent;
     public GameObject beginPath;
     public GameObject endPath;
-
 
     public float maxSpeed = 10.0f;
     public float maxRadio = 8.0f;
@@ -24,28 +31,23 @@ public class Population1 : MonoBehaviour
     List<Individual> evalAgent;
     List<Individual> parents;
 
-
     public bool gen1 = true;
     MoveVelSimple objmove;
     Individual objInd;
-    //Come objCome;
 
     // Crossover algorithms
     [SerializeField]
-    private bool fifthyFifthy = true;
-    [SerializeField]
-    private bool randomMidpoint = false;
-    [SerializeField]
-    private bool coinFlip = false;
+    CrossMethods crossMethod = new CrossMethods();
 
     // pool parent
     [Range(0, 100)]
     public int parentSelection = 25;
     [Range(0, 100)]
     public int mutationPercentage = 5;
-
+    [Range(1, 10)]
     public int mutatedGens = 10;
 
+    // Mutation vector
     public Vector2 Vx;
     public Vector2 Vy;
 
@@ -118,27 +120,19 @@ public class Population1 : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        //resetBools();
-    }
-
+    // Activate every agent gen
     public bool ActivaGen()
     {
        
         for (int i = 0; i < totalPop; i = i + 1)
         {
             grid1Agent[i].SetActive( true);
-
-        
         }
         return true;
     }
 
-
-
-  public bool allArrive()
+    // Validates if all the agents arrived
+    public bool allArrive()
     {  totalArrive = 0;
         for (int i = 0; i < totalPop; i ++)
         {
@@ -150,6 +144,8 @@ public class Population1 : MonoBehaviour
         else return false;
 
     }
+
+    // Select the best agent
     public void selecBest()
     {
         if (evalAgent.Count > 0)
@@ -175,28 +171,25 @@ public class Population1 : MonoBehaviour
         Debug.Log(let);
     }
 
+    // Creates a pool of parent agents for the next generation
     public void poolParent(float[] distancia)
     {
         parents = new List<Individual>();
 
         List<float> d = new List<float>(distancia);
         d.Sort();
-        //d.Reverse();
 
         float min_distance = d[parentSelection];
         
-
         foreach(Individual agent in evalAgent)
         {
             if (agent.distDest < min_distance) parents.Add(agent);
         }
 
         evalAgent = parents;
-
-        Debug.Log("Pool parent : " + s);
     }
 
-    //*********************************************************************
+    // Gen crossover
     public void crossover()
     {
         //Come refCome;
@@ -207,9 +200,7 @@ public class Population1 : MonoBehaviour
         Individual myInd;
 
         float minDistance = evalAgent[0].distDest;
-        //Debug.Log("maxima comida" + maxComida);
-
-        //int NumParents = (int)(totalPop / 4);   //mitad de población
+       
         int NumParents = parents.Count;
 
         List<GameObject> Gorigen;
@@ -231,11 +222,6 @@ public class Population1 : MonoBehaviour
         {
             father1 = Random.Range(0, NumParents);   //mitad de población
             father2 = Random.Range(0, NumParents);
-
-            /*
-            refInd_F1 = evalAgent[father1].gameObject.GetComponent<Individual>();
-            refInd_F2 = evalAgent[father2].gameObject.GetComponent<Individual>();
-            */
             
             refInd_F1 = parents[father1].gameObject.GetComponent<Individual>();
             refInd_F2 = parents[father2].gameObject.GetComponent<Individual>();
@@ -244,13 +230,14 @@ public class Population1 : MonoBehaviour
             refInd.reset();
             if (refInd != null)
             {
-                if (fifthyFifthy) refInd = fifthy_fifthy(refInd, refInd_F1, refInd_F2);
-                else if (randomMidpoint) refInd = random_midpoint(refInd, refInd_F1, refInd_F2);
-                else if (coinFlip) refInd = coin_flip(refInd, refInd_F1, refInd_F2);
+                if (crossMethod == CrossMethods.fifthyFifthy) refInd = fifthy_fifthy(refInd, refInd_F1, refInd_F2);
+                else if (crossMethod == CrossMethods.randomMidpoint) refInd = random_midpoint(refInd, refInd_F1, refInd_F2);
+                else if (crossMethod == CrossMethods.coinFlip) refInd = coin_flip(refInd, refInd_F1, refInd_F2);
             }
             
             
         }
+
         // termino de asignar caracteristicas
         //limpia listas
         evalAgent.Clear(); 
@@ -279,6 +266,7 @@ public class Population1 : MonoBehaviour
         }
     }
 
+    // Fifthy Fifhty crossover method
     public Individual fifthy_fifthy(Individual refInd, Individual refInd_F1, Individual refInd_F2)
     {
         int halfF = refInd.genSize / 2;
@@ -290,6 +278,7 @@ public class Population1 : MonoBehaviour
         return refInd;
     }
 
+    // Random midpoint crossover method
     public Individual random_midpoint(Individual refInd, Individual refInd_F1, Individual refInd_F2)
     {
         int randomMidpoint = Random.Range(0, refInd.genSize);
@@ -301,6 +290,7 @@ public class Population1 : MonoBehaviour
         return refInd;
     }
 
+    // Coin flip crossover method
     public Individual coin_flip(Individual refInd, Individual refInd_F1, Individual refInd_F2)
     {
         int randInt = Random.Range(0, 2);
@@ -318,7 +308,7 @@ public class Population1 : MonoBehaviour
         return refInd;
     }
 
-    //*********************************************************************
+    // Mutate the gens
     public void mutation()
     {
         List<GameObject> agents;
@@ -331,7 +321,7 @@ public class Population1 : MonoBehaviour
         GameObject obj;
         for (int i = 0; i < mutatedGens; i++)
         {
-            muta = Random.Range(0, totalPop);
+            muta = Random.Range(0, mutationPercentage);
             obj = agents[muta];
            
             objInd = obj.GetComponent<Individual>();
@@ -339,35 +329,8 @@ public class Population1 : MonoBehaviour
 
             Vector3 genTmp = new Vector3(UnityEngine.Random.Range(Vx[0], Vx[1]), 0, UnityEngine.Random.Range(Vy[0], Vy[1]));
             genTmp.Normalize();
-            genTmp *= mutationPercentage;
+            genTmp *= 5.0f;
             objInd.genes[genmuta]=genTmp;
-
         }
-
     }
-
-    public void resetBools()
-    {
-        if (fifthyFifthy)
-        {
-            randomMidpoint = false;
-            coinFlip = false;
-        }
-        else if (randomMidpoint)
-        {
-            fifthyFifthy = false;
-            coinFlip = false;
-        }
-        else if (coinFlip)
-        { 
-            fifthyFifthy = false;
-            randomMidpoint = false;
-        }
-        /*if(!fifthyFifthy && !randomMidpoint && !coinFlip)
-        {
-            fifthyFifthy = true;
-        }
-        */
-    }
-
 }
