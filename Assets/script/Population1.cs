@@ -14,6 +14,8 @@ public enum CrossMethods
 
 public class Population1 : MonoBehaviour
 {
+    [Range(0, 20)]
+    public int ff = 10;
     int totalPop = 100;
     int totalArrive = 0;
     public GameObject myagent;
@@ -54,7 +56,7 @@ public class Population1 : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        Time.timeScale = 10;
+        Time.timeScale = ff;
 
         //generate the first population of the algorithm
         grid1Agent = new List<GameObject>();
