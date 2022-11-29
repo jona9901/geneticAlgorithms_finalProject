@@ -44,6 +44,11 @@ public class Population1 : MonoBehaviour
     [Range(0, 100)]
     public int mutationPercentage = 5;
 
+    public int Vx0 = 0;
+    public int Vx1 = 1;
+    public int Vy0 = 0;
+    public int Vy1 = 1;
+
 
     // Use this for initialization
     void Start()
