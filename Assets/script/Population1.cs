@@ -21,6 +21,7 @@ public class Population1 : MonoBehaviour
     List<GameObject> grid1Agent;
     List<GameObject> newAgents;
     List<Individual> evalAgent;
+    List<Individual> parents;
 
 
     public bool gen1 = true;
@@ -30,16 +31,23 @@ public class Population1 : MonoBehaviour
 
     // Crossover algorithms
     [SerializeField]
-    private bool fifthy_fifthy = true;
+    private bool fifthyFifthy = true;
     [SerializeField]
-    private bool random_midpoint = false;
+    private bool randomMidpoint = false;
     [SerializeField]
-    private bool coin_flip = false;
+    private bool coinFlip = false;
+
+    // pool parent
+    [Range(0, 100)]
+    public int acceptancePercentage = 80; 
 
 
     // Use this for initialization
     void Start()
-    {   //generate the first population of the algorithm
+    {
+        Time.timeScale = 5;
+
+        //generate the first population of the algorithm
         grid1Agent = new List<GameObject>();
         newAgents = new List<GameObject>();
         evalAgent = new List<Individual>();
@@ -107,7 +115,7 @@ public class Population1 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        resetBools();
+        //resetBools();
     }
 
     public bool ActivaGen()
@@ -155,10 +163,30 @@ public class Population1 : MonoBehaviour
             let += distancia[i];
             let += ",";
         }
+
+        poolParent(distancia);
+
         Debug.Log(let);
-
-
     }
+
+    public void poolParent(float[] distancia)
+    {
+        parents = new List<Individual>();
+
+        List<float> d = new List<float>(distancia);
+        d.Sort();
+
+        int s = (int)((d.Count * acceptancePercentage) / 100);
+        float min_distance = d[s];
+
+        foreach(Individual agent in evalAgent)
+        {
+            if (agent.distDest > min_distance) parents.Add(agent);
+        }
+
+        Debug.Log("Pool parent : " + s);
+    }
+
     //*********************************************************************
     public void crossover()
     {
@@ -201,10 +229,12 @@ public class Population1 : MonoBehaviour
             refInd.reset();
             if (refInd != null)
             {
-                if (fifthy_fifthy) refInd = fifthyFifthy(refInd, refInd_F1, refInd_F2);
-                else if (random_midpoint) refInd = randomMidpoint(refInd, refInd_F1, refInd_F2);
-                else if (coin_flip) refInd = coinFlip(refInd, refInd_F1, refInd_F2);
+                if (fifthyFifthy) refInd = fifthy_fifthy(refInd, refInd_F1, refInd_F2);
+                else if (randomMidpoint) refInd = random_midpoint(refInd, refInd_F1, refInd_F2);
+                else if (coinFlip) refInd = coin_flip(refInd, refInd_F1, refInd_F2);
             }
+            
+            
         }
         // termino de asignar caracteristicas
         //limpia listas
@@ -231,12 +261,10 @@ public class Population1 : MonoBehaviour
             refMoveT = Gorigen[k].gameObject.GetComponent<MoveVelSimple>();
             refMoveT.OnSeek = false;
             refMoveT.TargetSeek.SetActive(false);
-
-
         }
     }
 
-    public Individual fifthyFifthy(Individual refInd, Individual refInd_F1, Individual refInd_F2)
+    public Individual fifthy_fifthy(Individual refInd, Individual refInd_F1, Individual refInd_F2)
     {
         int halfF = refInd.genSize / 2;
         for (int j = 0; j < halfF; j = j + 1)
@@ -247,7 +275,7 @@ public class Population1 : MonoBehaviour
         return refInd;
     }
 
-    public Individual randomMidpoint(Individual refInd, Individual refInd_F1, Individual refInd_F2)
+    public Individual random_midpoint(Individual refInd, Individual refInd_F1, Individual refInd_F2)
     {
         int randomMidpoint = Random.Range(0, refInd.genSize);
         for (int j = 0; j < randomMidpoint; j = j + 1)
@@ -258,7 +286,7 @@ public class Population1 : MonoBehaviour
         return refInd;
     }
 
-    public Individual coinFlip(Individual refInd, Individual refInd_F1, Individual refInd_F2)
+    public Individual coin_flip(Individual refInd, Individual refInd_F1, Individual refInd_F2)
     {
         int randInt = Random.Range(0, 2);
         for (int j = 0; j < randInt; j = j + 1)
@@ -305,21 +333,26 @@ public class Population1 : MonoBehaviour
 
     public void resetBools()
     {
-        if (fifthy_fifthy)
+        if (fifthyFifthy)
         {
-            random_midpoint = false;
-            coin_flip = false;
+            randomMidpoint = false;
+            coinFlip = false;
         }
-        else if (random_midpoint)
+        else if (randomMidpoint)
         {
-            fifthy_fifthy = false;
-            coin_flip = false;
+            fifthyFifthy = false;
+            coinFlip = false;
         }
-        else if (coin_flip)
+        else if (coinFlip)
         { 
-            fifthy_fifthy = false;
-            random_midpoint = false;
+            fifthyFifthy = false;
+            randomMidpoint = false;
         }
+        /*if(!fifthyFifthy && !randomMidpoint && !coinFlip)
+        {
+            fifthyFifthy = true;
+        }
+        */
     }
 
 }
