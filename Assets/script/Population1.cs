@@ -150,7 +150,6 @@ public class Population1 : MonoBehaviour
     {
         if (evalAgent.Count > 0)
         {
-            //evalAgent.TrimExcess();
             evalAgent.Sort();
         }
 
@@ -192,8 +191,6 @@ public class Population1 : MonoBehaviour
     // Gen crossover
     public void crossover()
     {
-        //Come refCome;
-
         Individual refInd;
         Individual refInd_F1;
         Individual refInd_F2;
