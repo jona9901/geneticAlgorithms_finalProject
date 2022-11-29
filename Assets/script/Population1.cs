@@ -40,7 +40,9 @@ public class Population1 : MonoBehaviour
 
     // pool parent
     [Range(0, 100)]
-    public int acceptancePercentage = 25; 
+    public int parentSelection = 25;
+    [Range(0, 100)]
+    public int mutationPercentage = 5;
 
 
     // Use this for initialization
@@ -177,9 +179,7 @@ public class Population1 : MonoBehaviour
         d.Sort();
         //d.Reverse();
 
-        //s = (int)( (s * acceptancePercentage)/ 100 );
-        //s = (int)((evalAgent.Count * acceptancePercentage) / 100);
-        float min_distance = d[acceptancePercentage];
+        float min_distance = d[parentSelection];
         
 
         foreach(Individual agent in evalAgent)
@@ -335,7 +335,7 @@ public class Population1 : MonoBehaviour
 
             Vector3 genTmp = new Vector3(UnityEngine.Random.Range(-1.0f, 1.0f), 0, UnityEngine.Random.Range(-1.0f, 1.0f));
             genTmp.Normalize();
-            genTmp *= 5.0f;
+            genTmp *= mutationPercentage;
             objInd.genes[genmuta]=genTmp;
 
         }
