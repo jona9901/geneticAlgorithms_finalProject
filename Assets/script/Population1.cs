@@ -332,7 +332,7 @@ public class Population1 : MonoBehaviour
 
         int muta, genmuta;
         GameObject obj;
-        for (int i = 0; i < (totalPop / 10); i++)
+        for (int i = 0; i < mutated_gens; i++)
         {
             muta = Random.Range(0, totalPop);
             obj = agents[muta];
