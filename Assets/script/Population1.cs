@@ -198,8 +198,6 @@ public class Population1 : MonoBehaviour
         Individual refInd_F1;
         Individual refInd_F2;
         Individual myInd;
-
-        float minDistance = evalAgent[0].distDest;
        
         int NumParents = parents.Count;
 
