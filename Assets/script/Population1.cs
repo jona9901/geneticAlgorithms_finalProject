@@ -106,7 +106,6 @@ public class Population1 : MonoBehaviour
 
             obj.gameObject.SetActive(false);
             newAgents.Add(obj);
-
         }
          ActivaGen();
         
