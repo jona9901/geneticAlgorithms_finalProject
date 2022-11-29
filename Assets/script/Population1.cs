@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Population1 : MonoBehaviour
 {
+    int s = 100;
 
     int totalPop = 100;
     int totalArrive = 0;
@@ -39,13 +40,13 @@ public class Population1 : MonoBehaviour
 
     // pool parent
     [Range(0, 100)]
-    public int acceptancePercentage = 80; 
+    public int acceptancePercentage = 25; 
 
 
     // Use this for initialization
     void Start()
     {
-        Time.timeScale = 5;
+        Time.timeScale = 10;
 
         //generate the first population of the algorithm
         grid1Agent = new List<GameObject>();
@@ -175,14 +176,19 @@ public class Population1 : MonoBehaviour
 
         List<float> d = new List<float>(distancia);
         d.Sort();
+        //d.Reverse();
 
-        int s = (int)((d.Count * acceptancePercentage) / 100);
-        float min_distance = d[s];
+        //s = (int)( (s * acceptancePercentage)/ 100 );
+        //s = (int)((evalAgent.Count * acceptancePercentage) / 100);
+        float min_distance = d[acceptancePercentage];
+        
 
         foreach(Individual agent in evalAgent)
         {
-            if (agent.distDest > min_distance) parents.Add(agent);
+            if (agent.distDest < min_distance) parents.Add(agent);
         }
+
+        evalAgent = parents;
 
         Debug.Log("Pool parent : " + s);
     }
@@ -200,7 +206,8 @@ public class Population1 : MonoBehaviour
         float minDistance = evalAgent[0].distDest;
         //Debug.Log("maxima comida" + maxComida);
 
-        int NumParents = (int)(totalPop / 4);   //mitad de población
+        //int NumParents = (int)(totalPop / 4);   //mitad de población
+        int NumParents = parents.Count;
 
         List<GameObject> Gorigen;
         List<GameObject> Gdestino;
@@ -222,8 +229,13 @@ public class Population1 : MonoBehaviour
             father1 = Random.Range(0, NumParents);   //mitad de población
             father2 = Random.Range(0, NumParents);
 
+            /*
             refInd_F1 = evalAgent[father1].gameObject.GetComponent<Individual>();
             refInd_F2 = evalAgent[father2].gameObject.GetComponent<Individual>();
+            */
+            
+            refInd_F1 = parents[father1].gameObject.GetComponent<Individual>();
+            refInd_F2 = parents[father2].gameObject.GetComponent<Individual>();
 
             refInd = Gdestino[i].GetComponent<Individual>();  // del hijo
             refInd.reset();
